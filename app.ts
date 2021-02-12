@@ -8,7 +8,7 @@ import * as mongoose from "mongoose";
     public app: express.Application;
     public routes: Routes = new Routes();
     public localMongoUrl: string = 'mongodb://127.0.0.1:27017/firework';
-    public remoteMongoUrl: string = ""
+    public remoteMongoUrl: string = "mongodb+srv://burak:burak@firework.fxgkf.mongodb.net/firework?retryWrites=true&w=majority"
     public isRemote: boolean;
 
 
@@ -16,9 +16,10 @@ import * as mongoose from "mongoose";
       this.app = express();
       this.config();
       this.routes.routes(this.app);
+      this.isRemote = process.argv[2] == "remote";
       this.mongoSetup();
       console.log(process.argv[2])
-      this.isRemote = process.argv[2] == "remote";
+      
     }
 
     private config(): void {

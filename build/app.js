@@ -8,13 +8,13 @@ class App {
     constructor() {
         this.routes = new routes_1.Routes();
         this.localMongoUrl = 'mongodb://127.0.0.1:27017/firework';
-        this.remoteMongoUrl = "";
+        this.remoteMongoUrl = "mongodb+srv://burak:burak@firework.fxgkf.mongodb.net/firework?retryWrites=true&w=majority";
         this.app = express();
         this.config();
         this.routes.routes(this.app);
+        this.isRemote = process.argv[2] == "remote";
         this.mongoSetup();
         console.log(process.argv[2]);
-        this.isRemote = process.argv[2] == "remote";
     }
     config() {
         this.app.use(bodyParser.urlencoded({ extended: true }));
