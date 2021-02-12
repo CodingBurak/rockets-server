@@ -7,11 +7,14 @@ const mongoose = require("mongoose");
 class App {
     constructor() {
         this.routes = new routes_1.Routes();
-        this.mongoUrl = 'mongodb://127.0.0.1:27017/firework';
+        this.localMongoUrl = 'mongodb://127.0.0.1:27017/firework';
+        this.remoteMongoUrl = "";
         this.app = express();
         this.config();
         this.routes.routes(this.app);
         this.mongoSetup();
+        console.log(process.argv[2]);
+        this.isRemote = process.argv[2] == "remote";
     }
     config() {
         this.app.use(bodyParser.urlencoded({ extended: true }));
@@ -23,8 +26,11 @@ class App {
         });
     }
     mongoSetup() {
-        //mongoose.Promise = global.Promise;
-        mongoose.connect(this.mongoUrl, { useNewUrlParser: true });
+        let url = this.localMongoUrl;
+        if (this.isRemote) {
+            url = this.remoteMongoUrl;
+        }
+        mongoose.connect(url, { useNewUrlParser: true });
     }
 }
 exports.default = new App().app;

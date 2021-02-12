@@ -7,13 +7,18 @@ import * as mongoose from "mongoose";
 
     public app: express.Application;
     public routes: Routes = new Routes();
-    public mongoUrl: string = 'mongodb://127.0.0.1:27017/firework';
+    public localMongoUrl: string = 'mongodb://127.0.0.1:27017/firework';
+    public remoteMongoUrl: string = ""
+    public isRemote: boolean;
+
 
     constructor() {
       this.app = express();
       this.config();
       this.routes.routes(this.app);
       this.mongoSetup();
+      console.log(process.argv[2])
+      this.isRemote = process.argv[2] == "remote";
     }
 
     private config(): void {
@@ -29,8 +34,12 @@ import * as mongoose from "mongoose";
     }
 
     private mongoSetup(): void {
-      //mongoose.Promise = global.Promise;
-      mongoose.connect(this.mongoUrl, { useNewUrlParser: true });
+      let url: string = this.localMongoUrl;
+      if (this.isRemote) {
+        url = this.remoteMongoUrl
+      }
+      
+      mongoose.connect(url, { useNewUrlParser: true });
     }
 
   }
