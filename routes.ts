@@ -1,43 +1,37 @@
 import { FireworkHandler } from './handler/FireworkHandler';
 
-import {Router, Request, Response, NextFunction, Application} from "express";
-  export class Routes {
+import { Router, Request, Response, NextFunction, Application } from "express";
+export class Routes {
 
-    public fireworkHandler: FireworkHandler = new FireworkHandler();
-    
-    public routes(app: Application): void {
-        
-      app.route('/')
-        .get((req: Request, res: Response) => {
-          res.status(200).send({
-            message: 'GET request successfulll!!!!'
-          })
+  public fireworkHandler: FireworkHandler = new FireworkHandler();
+
+  public routes(app: Application): void {
+    // by calling <url>/ return get request successfull
+    app.route('/')
+      .get((req: Request, res: Response) => {
+        res.status(200).send({
+          message: 'GET request successfull!'
         })
+      })
+    // create a router for endpoints 
+    const api = Router();
+    // create route <url>/api
+    app.use('/api', api);
 
-      const api = Router();
-      app.use('/api', api);
+    // create Rockets url <url>/api/rockets
+    api.route('/rockets')
+      .get(this.fireworkHandler.getAll)
 
-      // Rockets 
-      api.route('/rockets')
-        .get((req: Request, res: Response, next: NextFunction) => {
-          console.log(`Request from: ${req.originalUrl}`);
-          console.log(`Request type: ${req.method}`);
-          next();                      
-        }, this.fireworkHandler.getAll)
+    // POST endpoint
+    api.route('/rockets').post((req: Request, res: Response, next: NextFunction) => {
+      console.log(`Request from: ${JSON.stringify(req.body)}`);
+      next();
+    }, this.fireworkHandler.create);
 
-        // POST endpoint
-        api.route('/rockets').post((req: Request, res: Response, next: NextFunction) => {
-          console.log(`Request from: ${JSON.stringify(req.body)}`);
-         
-          next();
-        },this.fireworkHandler.create);
+    // Contact detail
+    api.route('/rocket/:rocketId')
+      //by calling DELETE /api/rocket/rocketid, call function delete
+      .delete(this.fireworkHandler.delete)
 
-      // Contact detail
-      api.route('/rocket/:rocketId')
-        // get specific contact
-        .get(this.fireworkHandler.getByID)
-        .put(this.fireworkHandler.update)
-        .delete(this.fireworkHandler.delete)
-
-    }
+  }
 }
